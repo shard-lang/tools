@@ -60,25 +60,6 @@ std::ostream& operator<<(std::ostream& os, tokenizer::TokenType type) noexcept
 /* ************************************************************************* */
 
 /**
- * @brief Write keyword type.
- * @param os
- * @param type
- * @return os
- */
-std::ostream& operator<<(std::ostream& os, tokenizer::KeywordType type) noexcept
-{
-    switch (type)
-    {
-#define KEYWORD(name, str) case tokenizer::KeywordType::name: return os << # str ;
-#include "shard/tokenizer/Token.def"
-    }
-
-    return os << "false";
-}
-
-/* ************************************************************************* */
-
-/**
  * @brief Write token value.
  * @param os
  * @param value
@@ -95,6 +76,16 @@ std::ostream& operator<<(std::ostream& os, const ValueHelper& value) noexcept
     case tokenizer::TokenType::Float:   return os << token.getFloatValue();
     case tokenizer::TokenType::Char:    return os << token.getCharValue();
     case tokenizer::TokenType::Int:     return os << token.getIntValue();
+
+    case tokenizer::TokenType::Keyword:
+    {
+        switch (token.getKeywordType())
+        {
+#define KEYWORD(name, str) case tokenizer::KeywordType::name: return os << # str ;
+#include "shard/tokenizer/Token.def"
+        }
+        break;
+    }
 
 #define PUNCTUATOR(name, str) case tokenizer::TokenType::name: return os << # str;
 #include "shard/tokenizer/Token.def"
@@ -151,7 +142,6 @@ int main(int argc, char** argv)
     {
         std::cout << "  {\n";
         std::cout << "    \"type\": " << token.getType() << ",\n";
-        std::cout << "    \"keyword\": " << token.getKeywordType() << ",\n";
         std::cout << "    \"value\": " << ValueHelper{token} << ",\n";
         std::cout << "  },\n";
     }

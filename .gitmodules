@@ -1,0 +1,3 @@
+[submodule "vendor/shard"]
+	path = vendor/shard
+	url = https://github.com/shard-lang/shard.git

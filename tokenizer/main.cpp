@@ -115,7 +115,7 @@ tokenizer::Tokenizer createTokenizer(StringView filename)
 
     // Copy standard input to string
     std::copy(
-        std::istream_iterator<char>(std::cin),
+        std::istream_iterator<char>(std::cin >> std::noskipws),
         std::istream_iterator<char>(),
         std::back_inserter(input)
     );

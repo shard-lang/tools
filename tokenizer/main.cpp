@@ -16,8 +16,10 @@
 
 // C++
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <ios>
 
 // Shard
 #include "shard/utility.hpp"
@@ -26,6 +28,7 @@
 #include "shard/StringView.hpp"
 #include "shard/tokenizer/Token.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
+#include "shard/tokenizer/TokenizerException.hpp"
 
 /* ************************************************************************* */
 
@@ -136,17 +139,33 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    std::cout << "[\n";
-
-    for (auto&& token : createTokenizer(argv[1]))
+    try
     {
-        std::cout << "  {\n";
-        std::cout << "    \"type\": " << token.getType() << ",\n";
-        std::cout << "    \"value\": " << ValueHelper{token} << ",\n";
-        std::cout << "  },\n";
-    }
+        std::stringstream oss;
 
-    std::cout << "]\n";
+        oss << "[\n";
+
+        for (auto&& token : createTokenizer(argv[1]))
+        {
+            oss << "  {\n";
+            oss << "    \"type\": " << token.getType() << ",\n";
+            oss << "    \"value\": " << ValueHelper{token} << "\n";
+            oss << "  },\n";
+        }
+
+        oss << "]\n";
+
+        std::copy(
+            std::istream_iterator<char>(oss >> std::noskipws),
+            std::istream_iterator<char>(),
+            std::ostream_iterator<char>(std::cout)
+        );
+    }
+    catch (const tokenizer::TokenizerException& e)
+    {
+        std::cerr << "\033[31mERROR\033[0m: " << e.what() << "" << std::endl;
+        return -1;
+    }
 }
 
 /* ************************************************************************* */
